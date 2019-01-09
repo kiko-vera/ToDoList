@@ -18,7 +18,6 @@ class ToDoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-       
         loadItems()
         
     }
@@ -90,20 +89,47 @@ class ToDoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    func loadItems() {
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         do {
             itemArray = try context.fetch(request)
         } catch {
             print("Error retrieving data. Error code: \(error)")
         }
+        tableView.reloadData()
     }
    
 }
 
+//MARK: Search Bar Methods
 extension ToDoListViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        <#code#>
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        loadItems(with: request)
     }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        } else {
+            DispatchQueue.main.async {
+                let request: NSFetchRequest<Item> = Item.fetchRequest()
+                request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+                
+                request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+                
+                self.self.loadItems(with: request)
+            }
+            
+        }
+    }
+    
 }
