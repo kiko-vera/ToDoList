@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		24505A3E21E8433B00DFFD15 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24505A3D21E8433B00DFFD15 /* CategoryViewController.swift */; };
 		246861AC21DFFBFC006CE9ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246861AB21DFFBFC006CE9ED /* AppDelegate.swift */; };
 		246861AE21DFFBFC006CE9ED /* ToDoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246861AD21DFFBFC006CE9ED /* ToDoListViewController.swift */; };
 		246861B121DFFBFC006CE9ED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 246861AF21DFFBFC006CE9ED /* Main.storyboard */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		24505A3D21E8433B00DFFD15 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		246861A821DFFBFC006CE9ED /* ToDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		246861AB21DFFBFC006CE9ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		246861AD21DFFBFC006CE9ED /* ToDoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoListViewController.swift; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 		24505A3B21E4226900DFFD15 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				24505A3D21E8433B00DFFD15 /* CategoryViewController.swift */,
 				246861AD21DFFBFC006CE9ED /* ToDoListViewController.swift */,
 			);
 			path = Controller;
@@ -170,6 +173,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24505A3E21E8433B00DFFD15 /* CategoryViewController.swift in Sources */,
 				246861AE21DFFBFC006CE9ED /* ToDoListViewController.swift in Sources */,
 				246861B421DFFBFC006CE9ED /* ToDoList.xcdatamodeld in Sources */,
 				246861AC21DFFBFC006CE9ED /* AppDelegate.swift in Sources */,
