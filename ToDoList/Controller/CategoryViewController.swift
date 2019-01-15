@@ -8,8 +8,10 @@
 
 import UIKit
 import RealmSwift
+import SwipeCellKit
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()
     
@@ -21,22 +23,32 @@ class CategoryViewController: UITableViewController {
         super.viewDidLoad()
         
         loadCategories()
+        
+        tableView.rowHeight = 80
+        tableView.separatorStyle = .none
+//        navigationController?.navigationBar.barTintColor = UIColor(hexString: "5ED4EB")
     }
 
+
+    //MARK: Action to add a new item
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         
         let alert = UIAlertController(title: "Add Category", message: "Name it whatever you want", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
         let addCategoryAction = UIAlertAction(title: "Add it!", style: .default) { (action) in
             
             let newCategory = Category()
             newCategory.name = textField.text!
+            newCategory.cellBackgroundColor = UIColor.randomFlat.hexValue()
             
             self.save(category: newCategory)
             
         }
         
         alert.addAction(addCategoryAction)
+        alert.addAction(cancelAction)
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Add new category"
             textField = alertTextField
@@ -51,16 +63,18 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No Categories added yet"
+        cell.backgroundColor = UIColor(hexString: categoryArray?[indexPath.row].cellBackgroundColor ?? "#FFF")
+        cell.textLabel?.textColor = ContrastColorOf(cell.backgroundColor ?? UIColor.white, returnFlat: true)
         return cell
     }
     
     //MARK: Table View Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
-    
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -91,5 +105,20 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    override func updateModel(at indexPath: IndexPath) {
+        if let categoryForDeletion = self.categoryArray?[indexPath.row] {
+
+            do {
+                try self.realm.write {
+                    self.realm.delete(categoryForDeletion)
+                }
+            } catch {
+                print("Error deleting category, \(error)")
+            }
+        }
+    }
     
 }
+
+
+

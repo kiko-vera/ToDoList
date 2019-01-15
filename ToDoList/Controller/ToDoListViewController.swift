@@ -8,10 +8,11 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
+class ToDoListViewController: SwipeTableViewController {
 
-class ToDoListViewController: UITableViewController {
-
+    @IBOutlet weak var searchBar: UISearchBar!
     var toDoItems: Results<Item>?
     let realm = try! Realm()
     
@@ -27,7 +28,38 @@ class ToDoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-   }
+        tableView.rowHeight = 80.0
+        tableView.separatorStyle = .none
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        title = selectedCategory!.name
+        
+        guard let colorHex = selectedCategory?.cellBackgroundColor else { fatalError() }
+        
+        updateNavBar(withHexCode: colorHex)
+        
+        searchBar.placeholder = "Search for items"
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        updateNavBar(withHexCode: "005493")
+
+        navigationController?.navigationBar.tintColor = FlatWhite()
+        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: FlatWhite()]
+    }
+    
+    //MARK: Update Nav Bar Methods
+    
+    func updateNavBar(withHexCode colorHexCode: String){
+        guard let navBar = navigationController?.navigationBar else { fatalError("Navigation controller does not exist.") }
+        
+        guard let navBarColor = UIColor(hexString: colorHexCode) else { fatalError() }
+        navBar.barTintColor = navBarColor
+        navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
+        navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: ContrastColorOf(navBarColor, returnFlat: true)]
+        searchBar.barTintColor = navBarColor
+    }
     
     //MARK: Table View Data Source Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -35,10 +67,23 @@ class ToDoListViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoListItem", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        var percentageForCellGradient: CGFloat = 0.0
         
         if let item = toDoItems?[indexPath.row] {
             cell.textLabel?.text = item.title
+            
+            if toDoItems!.count > 40 {
+                percentageForCellGradient = CGFloat(indexPath.row)/CGFloat(toDoItems!.count)
+            } else {
+                percentageForCellGradient = CGFloat(indexPath.row)/40.0
+            }
+            
+            if let color = UIColor(hexString: selectedCategory!.cellBackgroundColor)?.darken(byPercentage: percentageForCellGradient) {
+                cell.backgroundColor = color
+                cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+            }
+            
             cell.accessoryType = item.done ? .checkmark : .none
         } else {
             cell.textLabel?.text = "No Items Added"
@@ -70,7 +115,7 @@ class ToDoListViewController: UITableViewController {
         var textField = UITextField()
         
         let alert = UIAlertController(title: "Add new To-Do Item", message: "", preferredStyle: .alert)
-        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             //what will happen when we hit add
             
@@ -95,7 +140,7 @@ class ToDoListViewController: UITableViewController {
             textField = alertTextField
         }
         alert.addAction(action)
-        
+        alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
         
         
@@ -107,6 +152,19 @@ class ToDoListViewController: UITableViewController {
         toDoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         
         tableView.reloadData()
+    }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let itemForDeletion = self.toDoItems?[indexPath.row] {
+            
+            do {
+                try self.realm.write {
+                    self.realm.delete(itemForDeletion)
+                }
+            } catch {
+                print("Error deleting category, \(error)")
+            }
+        }
     }
    
 }
