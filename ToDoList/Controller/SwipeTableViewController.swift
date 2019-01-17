@@ -15,7 +15,9 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        
+        tableView.separatorInset = .zero
     }
 
     //MARK: TableView Data Source Methods
@@ -35,7 +37,6 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
         
         let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
             // handle action by updating model with deletion
-            print("Item Deleted")
             self.updateModel(at: indexPath)
 
         }
